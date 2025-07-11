@@ -1,4 +1,4 @@
-name: Use .pfx in Workflow
+name: Build and Publish Electron App
 
 on:
   push:
@@ -6,32 +6,31 @@ on:
       - main
 
 jobs:
-  use-pfx:
+  build-and-publish:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out code
+      - name: Check out source code
         uses: actions/checkout@v3
-      
-      - name: Decode the PFX file from Base64
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Adjust the Node.js version to suit your project's needs
+
+      - name: Install dependencies (including electron-forge)
+        run: |
+          npm install
+
+      - name: Create keys directory and decode .pfx file
         env:
           PFX_BASE64: ${{ secrets.PFX_CERTIFICATE }}
         run: |
-          mkdir -p keys                # Create the keys directory (ensures it exists)
+          mkdir -p keys
           echo "$PFX_BASE64" | base64 -d > keys/certificate.pfx
-          ls -l # Verify file exists
-
-      - name: Verify .pfx file
-        run: |
-          if [ ! -f keys/certificate.pfx ]; then
-            echo "Error: .pfx file not found!"
-            exit 1
-          fi
-          echo ".pfx file is ready for use"
 
       - name: Publish Electron App
         env:
-          PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }} # Password for .pfx if required
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Automatically provided by GitHub Actions
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm run publish
+          npx electron-forge publish
