@@ -1,0 +1,23 @@
+{
+  "name": "my-electron-app",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mpointner/my-electron-app.git"
+  },
+  "author": "Michael Pointner",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mpointner/my-electron-app/issues"
+  },
+  "homepage": "https://github.com/mpointner/my-electron-app#readme",
+  "description": "",
+  "devDependencies": {
+    "electron": "^37.2.1"
+  }
+}
