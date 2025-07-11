@@ -1,0 +1,37 @@
+name: Use .pfx in Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  use-pfx:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      
+      - name: Decode the PFX file from Base64
+        env:
+          PFX_BASE64: ${{ secrets.PFX_CERTIFICATE }}
+        run: |
+          mkdir -p keys                # Create the keys directory (ensures it exists)
+          echo "$PFX_BASE64" | base64 -d > keys/certificate.pfx
+          ls -l # Verify file exists
+
+      - name: Verify .pfx file
+        run: |
+          if [ ! -f keys/certificate.pfx ]; then
+            echo "Error: .pfx file not found!"
+            exit 1
+          fi
+          echo ".pfx file is ready for use"
+
+      - name: Publish Electron App
+        env:
+          PFX_PASSWORD: ${{ secrets.PFX_PASSWORD }} # Password for .pfx if required
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Automatically provided by GitHub Actions
+        run: |
+          npm run publish
